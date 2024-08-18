@@ -7,6 +7,7 @@ const Task = require("../models/task.model");
 const createTaskBodySchema = zod.object({
   title: zod.string(),
   description: zod.string(),
+  completed: zod.boolean().optional(),
 });
 
 const updateTaskBodySchema = zod.object({
@@ -52,6 +53,7 @@ router.post("/create", authMiddleware, async (req, res) => {
       userId: req.userId,
       title: req.body.title,
       description: req.body.description,
+      completed: req.body.completed,
     });
 
     return res.status(201).json({
