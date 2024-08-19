@@ -85,7 +85,7 @@ router.put("/update/:id", authMiddleware, async (req, res) => {
       },
       {
         ...data,
-        updatedAt: Date.now(),
+        createdAt: Date.now(),
       }
     );
 
