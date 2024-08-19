@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,29 +13,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateTask } from "@/context/Reducers";
 
-const Task = () => {
-  const [title, setTitle] = useState("This is a new task");
-  const [description, setDescription] =
-    useState(`Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci
-            pariatur, totam culpa quis aliquid id quo voluptatum ullam nulla!
-            Eaque et ab iste veritatis accusantium! Exercitationem reiciendis rem
-            minus pariatur.`);
+const Task = ({ id, title, description, createdAt }) => {
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
   const [editDescription, setEditDescription] = useState(description);
 
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
-      setTitle(editTitle);
-      setDescription(editDescription);
-      setIsOpen(false);
-    },
-    [editTitle, editDescription, setTitle, setDescription, setIsOpen]
-  );
-
+  const handleUpdate = (updatedTask) => {
+    dispatch(updateTask(updatedTask));
+  };
   return (
     <div className="shadow-md w-80 rounded-lg p-3 bg-violet-300">
       <div className="flex justify-between items-center">
@@ -55,7 +46,15 @@ const Task = () => {
                 done.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit}>
+            <form
+              onSubmit={() =>
+                handleUpdate({
+                  id: id,
+                  title: editTitle,
+                  description: editDescription,
+                })
+              }
+            >
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="title" className="text-left">
@@ -94,6 +93,9 @@ const Task = () => {
           style={{ color: "#3b0764" }}
           className="cursor-pointer"
         />
+      </div>
+      <div className="text-white text-sm font-light ">
+        <p>{new Date(createdAt).toLocaleString()}</p>
       </div>
     </div>
   );
