@@ -23,7 +23,8 @@ export const addTask = createAsyncThunk("tasks/addTasks", async (task) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data.message;
+
+  return response.data.data;
 });
 
 export const updateTask = createAsyncThunk(
@@ -39,7 +40,8 @@ export const updateTask = createAsyncThunk(
         },
       }
     );
-    return response.data.message;
+
+    return response.data.task;
   }
 );
 

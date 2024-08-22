@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateTask } from "@/context/Reducers";
+import { deleteOneTask, updateTask } from "@/context/Reducers";
 
 const Task = ({ id, title, description, createdAt }) => {
   const dispatch = useDispatch();
@@ -25,6 +25,10 @@ const Task = ({ id, title, description, createdAt }) => {
 
   const handleUpdate = (updatedTask) => {
     dispatch(updateTask(updatedTask));
+  };
+
+  const handleDeleteTask = (taskId) => {
+    dispatch(deleteOneTask(taskId));
   };
   return (
     <div className="shadow-md w-80 rounded-lg p-3 bg-violet-300">
@@ -92,6 +96,10 @@ const Task = ({ id, title, description, createdAt }) => {
           icon={faTrash}
           style={{ color: "#3b0764" }}
           className="cursor-pointer"
+          onClick={() => {
+            handleDeleteTask({ _id: id });
+            window.location.reload();
+          }}
         />
       </div>
       <div className="text-white text-sm font-light ">

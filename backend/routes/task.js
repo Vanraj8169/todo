@@ -58,6 +58,7 @@ router.post("/create", authMiddleware, async (req, res) => {
 
     return res.status(201).json({
       message: "Task created successfully",
+      data: newTask,
     });
   } catch (err) {
     return res.status(500).json({

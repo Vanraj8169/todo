@@ -24,7 +24,7 @@ import {
 import { useEffect, useState } from "react";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import { useDispatch, useSelector } from "react-redux";
-import { addTask, fetchTask } from "@/context/Reducers";
+import { addTask, deleteTask, fetchTask } from "@/context/Reducers";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -39,11 +39,15 @@ export default function Home() {
   }, [status, dispatch]);
 
   const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    task?.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddTask = (newTask) => {
     dispatch(addTask(newTask));
+  };
+
+  const handleDeleteAllTask = () => {
+    dispatch(deleteTask());
   };
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -88,60 +92,65 @@ export default function Home() {
                 you&apos;re done.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-left">
-                  Title
-                </Label>
-                <Input
-                  id="title"
-                  placeholder="Enter task title"
-                  className="col-span-3"
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+            <form
+              onSubmit={() =>
+                handleAddTask({
+                  title: title,
+                  description: description,
+                })
+              }
+            >
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="title" className="text-left">
+                    Title
+                  </Label>
+                  <Input
+                    id="title"
+                    placeholder="Enter task title"
+                    className="col-span-3"
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-left">
+                    Description
+                  </Label>
+                  <Input
+                    id="description"
+                    placeholder="Enter task description"
+                    className="col-span-3"
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="selector" className="text-left">
+                    Status
+                  </Label>
+                  <Select className="col-span-3">
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Add status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="todo">To do</SelectItem>
+                        <SelectItem value="doing">Doing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-left">
-                  Description
-                </Label>
-                <Input
-                  id="description"
-                  placeholder="Enter task description"
-                  className="col-span-3"
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="selector" className="text-left">
-                  Status
-                </Label>
-                <Select className="col-span-3">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Add status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="todo">To do</SelectItem>
-                      <SelectItem value="doing">Doing</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                type="submit"
-                onClick={() => handleAddTask({ title, description })}
-              >
-                Save Task
-              </Button>
-            </DialogFooter>
+              <DialogFooter>
+                <Button type="submit">Save Task</Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
         <Button
           type="submit"
           className="w-full sm:w-auto flex items-center justify-center space-x-2"
+          onClick={handleDeleteAllTask}
         >
           <FontAwesomeIcon
             icon={faTrash}
