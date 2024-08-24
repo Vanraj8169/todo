@@ -102,7 +102,7 @@ const Task = ({ id, title, description, createdAt }) => {
           }}
         />
       </div>
-      <div className="text-white text-sm font-light ">
+      <div className="text-black font-normal text-sm">
         <p>{new Date(createdAt).toLocaleString()}</p>
       </div>
     </div>

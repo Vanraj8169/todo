@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { closestCenter, DndContext } from "@dnd-kit/core";
 import { useDispatch, useSelector } from "react-redux";
 import { addTask, deleteTask, fetchTask } from "@/context/Reducers";
+import { SkeletonCard } from "./Shimmer";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [completed,setCompleted] = useState([]);
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchTask({ message: "" }));
@@ -163,29 +165,60 @@ export default function Home() {
 
       <DndContext collisionDetection={closestCenter}>
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full max-w-6xl ">
-          {["🎯 To Do", "🌟 Doing", "✅ Done"].map((title) => (
-            <div
-              key={title}
-              className="flex flex-col gap-4 w-full lg:w-1/3 items-center"
-            >
-              <h2 className="text-2xl font-bold text-black dark:text-white">
-                {title}
-              </h2>
-              {filteredTasks.length > 0 ? (
-                filteredTasks.map((task) => (
-                  <Task
-                    key={task._id}
-                    id={task._id}
-                    title={task.title}
-                    description={task.description}
-                    createdAt={task.createdAt}
-                  />
-                ))
-              ) : (
-                <p>No tasks available</p>
-              )}
-            </div>
-          ))}
+          <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
+            <h2 className="text-2xl font-bold text-black dark:text-white">
+              🎯 To Do
+            </h2>
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
+                <Task
+                  key={task._id}
+                  id={task._id}
+                  title={task.title}
+                  description={task.description}
+                  createdAt={task.createdAt}
+                />
+              ))
+            ) : (
+              <SkeletonCard />
+            )}
+          </div>
+          <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
+            <h2 className="text-2xl font-bold text-black dark:text-white">
+              🌟 Doing
+            </h2>
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
+                <Task
+                  key={task._id}
+                  id={task._id}
+                  title={task.title}
+                  description={task.description}
+                  createdAt={task.createdAt}
+                />
+              ))
+            ) : (
+              <SkeletonCard />
+            )}
+          </div>
+          <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
+            <h2 className="text-2xl font-bold text-black dark:text-white">
+              ✅ Done
+            </h2>
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
+                <Task
+                  key={task._id}
+                  id={task._id}
+                  title={task.title}
+                  description={task.description}
+                  createdAt={task.createdAt}
+                />
+              ))
+            ) : (
+              <SkeletonCard />
+            )}
+          </div>
         </div>
       </DndContext>
     </div>
