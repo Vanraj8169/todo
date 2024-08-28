@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Task from "./Task";
@@ -22,18 +23,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { closestCenter, DndContext } from "@dnd-kit/core";
 import { useDispatch, useSelector } from "react-redux";
 import { addTask, deleteTask, fetchTask } from "@/context/Reducers";
 import { SkeletonCard } from "./Shimmer";
+import DropArea from "./DropArea";
 
 export default function Home() {
   const dispatch = useDispatch();
   const { tasks, status, error } = useSelector((state) => state.tasks);
+  const [activeCard, setActiveCard] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [completed,setCompleted] = useState([]);
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchTask({ message: "" }));
@@ -50,6 +51,23 @@ export default function Home() {
 
   const handleDeleteAllTask = () => {
     dispatch(deleteTask());
+  };
+
+  const onDrop = (status, position) => {
+    // console.log(
+    //   `${activeCard} is going to place into ${status} and at the position ${position}`
+    // );
+
+    if (activeCard == null || activeCard === undefined) return;
+    const taskToMove = tasks.find((t) => t._id === activeCard);
+    const updatedTask = tasks.filter((task) => task._id !== activeCard);
+
+    updatedTask.splice(position, 0, {
+      ...taskToMove,
+      status: status,
+    });
+
+    tasks = updatedTask;
   };
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -163,64 +181,75 @@ export default function Home() {
         </Button>
       </div>
 
-      <DndContext collisionDetection={closestCenter}>
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full max-w-6xl ">
-          <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
-            <h2 className="text-2xl font-bold text-black dark:text-white">
-              🎯 To Do
-            </h2>
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full max-w-6xl ">
+        <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
+          <h2 className="text-2xl font-bold text-black dark:text-white">
+            🎯 To Do
+          </h2>
+          <DropArea onDrop={() => onDrop(1, 0)} />
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((task, index) => (
+              <React.Fragment key={task._id}>
                 <Task
-                  key={task._id}
                   id={task._id}
                   title={task.title}
                   description={task.description}
                   createdAt={task.createdAt}
+                  setActiveCard={setActiveCard}
                 />
-              ))
-            ) : (
-              <SkeletonCard />
-            )}
-          </div>
-          <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
-            <h2 className="text-2xl font-bold text-black dark:text-white">
-              🌟 Doing
-            </h2>
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <Task
-                  key={task._id}
-                  id={task._id}
-                  title={task.title}
-                  description={task.description}
-                  createdAt={task.createdAt}
-                />
-              ))
-            ) : (
-              <SkeletonCard />
-            )}
-          </div>
-          <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
-            <h2 className="text-2xl font-bold text-black dark:text-white">
-              ✅ Done
-            </h2>
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <Task
-                  key={task._id}
-                  id={task._id}
-                  title={task.title}
-                  description={task.description}
-                  createdAt={task.createdAt}
-                />
-              ))
-            ) : (
-              <SkeletonCard />
-            )}
-          </div>
+                <DropArea onDrop={() => onDrop(1, index + 1)} />
+              </React.Fragment>
+            ))
+          ) : (
+            <SkeletonCard />
+          )}
         </div>
-      </DndContext>
+        <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
+          <h2 className="text-2xl font-bold text-black dark:text-white">
+            🌟 Doing
+          </h2>
+          <DropArea onDrop={() => onDrop(2, 0)} />
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((task, index) => (
+              <React.Fragment key={task._id}>
+                <Task
+                  id={task._id}
+                  title={task.title}
+                  description={task.description}
+                  createdAt={task.createdAt}
+                  setActiveCard={setActiveCard}
+                />
+                <DropArea onDrop={() => onDrop(2, index + 1)} />
+              </React.Fragment>
+            ))
+          ) : (
+            <SkeletonCard />
+          )}
+        </div>
+        <div className="flex flex-col gap-4 w-full lg:w-1/3 items-center">
+          <h2 className="text-2xl font-bold text-black dark:text-white">
+            ✅ Done
+          </h2>
+          <DropArea onDrop={() => onDrop(3, 0)} />
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((task, index) => (
+              <React.Fragment key={task._id}>
+                <Task
+                  id={task._id}
+                  title={task.title}
+                  description={task.description}
+                  createdAt={task.createdAt}
+                  setActiveCard={setActiveCard}
+                />
+                <DropArea onDrop={() => onDrop(3, index + 1)} />
+              </React.Fragment>
+            ))
+          ) : (
+            <SkeletonCard />
+          )}
+        </div>
+      </div>
+      {activeCard}
     </div>
   );
 }

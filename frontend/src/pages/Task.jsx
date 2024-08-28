@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { deleteOneTask, updateTask } from "@/context/Reducers";
 
-const Task = ({ id, title, description, createdAt }) => {
+const Task = ({ id, title, description, createdAt, setActiveCard }) => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
@@ -31,7 +31,14 @@ const Task = ({ id, title, description, createdAt }) => {
     dispatch(deleteOneTask(taskId));
   };
   return (
-    <div className="shadow-md w-80 rounded-lg p-3 bg-violet-300">
+    <div
+      className="shadow-md w-80 rounded-lg p-3 bg-violet-300
+      active:opacity-20
+      active:border active:border-black cursor-grab"
+      draggable="true"
+      onDragStart={() => setActiveCard(id)}
+      onDragEnd={() => setActiveCard(null)}
+    >
       <div className="flex justify-between items-center">
         <h1 className="text-black font-bold text-lg">{title}</h1>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
